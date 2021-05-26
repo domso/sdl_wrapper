@@ -1,12 +1,14 @@
 #include "renderer.h"
 
+#include "SDL_ttf.h"
+
 namespace SDL {  
     renderer::renderer() : m_internalHandle(nullptr) {
-        
     }
     
     bool renderer::init(window& targetWindow) {
-        m_internalHandle = SDL_CreateRenderer(targetWindow.internal_handler(), -1, SDL_RENDERER_SOFTWARE);
+        m_internalHandle = SDL_CreateRenderer(targetWindow.internal_handler(), -1, SDL_RENDERER_ACCELERATED);
+        SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
         return m_internalHandle != nullptr;
     }        
     
@@ -55,6 +57,18 @@ namespace SDL {
     
     texture renderer::create_texture(const int width, const int height) {
         return SDL::texture(SDL_CreateTexture(m_internalHandle, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height));
+    }
+    
+    texture renderer::create_texture(font& textFont, const std::string& text, const uint8_t r, const uint8_t g, const uint8_t b) {
+        SDL_Color textColor = {r, g, b, 255};
+        if (textFont.internal_handle() == nullptr) {
+            abort();
+        }
+        SDL_Surface* surface = TTF_RenderText_Blended(textFont.internal_handle(), text.c_str(), textColor);
+        texture tmp(SDL_CreateTextureFromSurface(m_internalHandle, surface));
+        
+        SDL_FreeSurface(surface);
+        return tmp;
     }
         
     void renderer::set_target(texture& target) {

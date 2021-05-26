@@ -5,6 +5,7 @@
 #include "window.h"
 #include "image.h"
 #include "texture.h"
+#include "font.h"
 
 namespace SDL {
     class renderer {
@@ -33,9 +34,12 @@ namespace SDL {
         
         void set_draw_color(const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a);
         
+        
         texture create_texture(image& texImg);
         
         texture create_texture(const int width, const int height);
+           
+        texture create_texture(font& textFont, const std::string& text, const uint8_t r, const uint8_t g, const uint8_t b);
         
         void set_target(texture& target);
                 
